@@ -1,0 +1,56 @@
+#!/bin/bash
+#SBATCH --job-name=CB2wPV_STARRSEM
+#SBATCH --cpus-per-task=6
+#SBATCH --mem=50G
+#SBATCH --time=36:00:00
+#SBATCH --output=CB2wPV_STARRSEM_%A_%a.log
+#SBATCH --array=1-9
+
+
+# echo
+config="/list.txt"
+
+INPUT_DIR="/Fastq"
+OUTPUT_DIR="/STAR_RSEM"
+mkdir -p "$OUTPUT_DIR"
+
+# Extract the sample name for the current $SLURM_ARRAY_TASK_ID
+pair1=$(awk -v ArrayTaskID=$SLURM_ARRAY_TASK_ID '$1==ArrayTaskID {print $2}' $config)
+pair2=$(awk -v ArrayTaskID=$SLURM_ARRAY_TASK_ID '$1==ArrayTaskID {print $3}' $config)
+pair3=$(awk -v ArrayTaskID=$SLURM_ARRAY_TASK_ID '$1==ArrayTaskID {print $4}' $config)
+
+
+# load modules
+module load STAR/2.7.8a-GCC-11.2.0
+module load RSEM/1.3.3-foss-2021b
+module load SAMtools/1.19-foss-2021b
+
+FILENAME=$(basename "$pair1".fq.gz | sed 's/^\([^_]*_[^_]*\)_.*/\1/')
+
+# Run STAR
+STAR --runThreadN 6 \
+--readFilesCommand zcat \
+--genomeDir /ijc/LABS/CALVANESE/DATA/Reference/hg38/STARindex \
+--quantMode TranscriptomeSAM GeneCounts \
+--sjdbGTFfile /ijc/LABS/CALVANESE/DATA/Reference/hg38/Homo_sapiens.GRCh38.115.gtf \
+--twopassMode Basic \
+--readFilesIn "$pair1" "$pair2" \
+--outSAMtype BAM SortedByCoordinate \
+--outTmpDir "$pair3" \
+--outFileNamePrefix ${OUTPUT_DIR}/VC_${FILENAME}_
+
+#run RSEM
+rsem-calculate-expression --paired-end \
+                          --bam \
+                          -p 6 \
+                          --estimate-rspd \
+                          --append-names \
+                          --output-genome-bam \
+                          --strandedness reverse \
+                          ${OUTPUT_DIR}/VC_${FILENAME}_Aligned.toTranscriptome.out.bam \
+                          /ijc/LABS/CALVANESE/DATA/Reference/hg38/RSEM_ref/RSEM_ref \
+                          ${OUTPUT_DIR}/RSEM_${FILENAME}
+
+
+cd ${OUTPUT_DIR}
+rsem-generate-data-matrix *.genes.results > RSEMm_digi.counts.matrix
