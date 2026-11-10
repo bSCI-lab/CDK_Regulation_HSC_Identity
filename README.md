@@ -25,8 +25,7 @@ The repository is organized by sequencing modality and analysis type. The direct
 │   ├── ATAC-seq/
 │   ├── bulk_RNA-seq/
 │   ├── scRNA-seq/
-│   ├── ChIP-seq/
-│   └── supplementary_tables/
+│   └── ChIP-seq/
 ├── data/
 └── supplementary_tables/
 ```
