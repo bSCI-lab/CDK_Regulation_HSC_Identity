@@ -27,7 +27,7 @@ The repository is organized by sequencing modality and analysis type. The direct
 │   ├── scRNA-seq/
 │   ├── ChIP-seq/
 │   └── supplementary_tables/
-├── metadata/
+├── data/
 └── supplementary_tables/
 ```
 
