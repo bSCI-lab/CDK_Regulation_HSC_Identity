@@ -37,12 +37,6 @@ Information on the availability of the sequencing datasets and their correspondi
 
 Raw sequencing data are not included in this GitHub repository.
 
-## Software and reproducibility
-
-The analysis scripts, software requirements, and execution instructions will be documented within the corresponding analysis directories.
-
-Where applicable, software versions, reference genomes, and analysis parameters will be specified to facilitate reproducibility.
-
 ## Authors
 
 **Chloé Perrod¹˒², A. Madrigal-Avilés¹, J. Aguadé-Gorgorió¹, Y. Wen¹˒², P. Viana-Mendonça¹, A. García-Pérez¹, S. T. Rahman², J. Barclay¹, G. Manfili¹, J. Pera¹, H. M. Bunce¹, R. A. M. De Bruin², H. K. A. Mikkola³˒⁴, V. Calvanese¹˒²˒³\***
@@ -71,6 +65,6 @@ Perrod C., Madrigal-Avilés A., Aguadé-Gorgorió J., et al. *Modulation of tran
 
 For scientific questions about the study, please contact:
 
-**Dr. Vincenzo Calvanese**  
+**Vincenzo Calvanese, Ph.D.**  
 Josep Carreras Leukaemia Research Institute  
 vcalvanese@carrerasresearch.org
