@@ -1,0 +1,39 @@
+#!/bin/bash
+#SBATCH --job-name=MaATAC_FLA
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=16G
+#SBATCH --time=8:00:00
+#SBATCH --output=MaATAC_FLA_%A_%a.log
+#SBATCH --array=1-6%3
+
+# load modules
+module load homer/0.1
+module load MACS3/3.0.1-foss-2022b
+
+config="/ListBam.txt"
+
+# input output directory
+INPUT_DIR="/ATAC_genome/Bam"
+OUTPUT_DIR="/Macs_Homer_DATA/CB_ATAC"
+# Extract the sample name for the current $SLURM_ARRAY_TASK_ID, strip suffix
+pair1=$(awk -v ArrayTaskID=$SLURM_ARRAY_TASK_ID '$1==ArrayTaskID {print $2}' $config)
+BASE=$(basename "$pair1")
+FILENAME=${BASE%%_tsrmChM-bkl.bam}
+#_na01 for narrowPeak
+SAMPLE_OUTDIR="${OUTPUT_DIR}/${FILENAME}_na01"
+mkdir -p "$SAMPLE_OUTDIR"
+
+#peak calling and motif finding
+macs3 callpeak -t "$pair1" -f BAMPE -g hs -n "${FILENAME}" --keep-dup all -q 0.01 --bdg --outdir "$SAMPLE_OUTDIR"
+cd "$SAMPLE_OUTDIR"
+annotatePeaks.pl "${FILENAME}_peaks.narrowPeak" hg38 > "ann${FILENAME}_na01_peaks.bed" -annStats "ann${FILENAME}_na01_peaks.txt"
+cd ..
+
+#Gonzalo, do I need to indicate this?
+ArrayTaskID pair1
+1 /ijc/LABS/CALVANESE/RAW/02.NGS_Bulk/CB/ATAC_genome/Bam/ATAC2w_Fla25_fCB5_tsrmChM-bkl.bam
+2 /ijc/LABS/CALVANESE/RAW/02.NGS_Bulk/CB/ATAC_genome/Bam/ATAC2w_Fla25_fCB6_tsrmChM-bkl.bam
+3 /ijc/LABS/CALVANESE/RAW/02.NGS_Bulk/CB/ATAC_genome/Bam/ATAC2w_Fla25_fCB7_tsrmChM-bkl.bam
+4 /ijc/LABS/CALVANESE/RAW/02.NGS_Bulk/CB/ATAC_genome/Bam/ATAC2w_pGFP_fCB5_tsrmChM-bkl.bam
+5 /ijc/LABS/CALVANESE/RAW/02.NGS_Bulk/CB/ATAC_genome/Bam/ATAC2w_pGFP_fCB6_tsrmChM-bkl.bam
+6 /ijc/LABS/CALVANESE/RAW/02.NGS_Bulk/CB/ATAC_genome/Bam/ATAC2w_pGFP_fCB7_tsrmChM-bkl.bam
